@@ -1,0 +1,354 @@
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@
+-      .diagram-top,
+-      .intake-top {
++      .diagram-top,
++      .intake-top,
++      .routing-top {
+         display: flex;
+         justify-content: space-between;
+         gap: 16px;
+         padding: 16px 18px;
+         border-bottom: 1px solid var(--line);
+       }
+@@
+-      .diagram-top p:last-child,
+-      .intake-top p:last-child {
++      .diagram-top p:last-child,
++      .intake-top p:last-child,
++      .routing-top p:last-child {
+         margin: 0;
+         color: var(--muted);
+         font-size: 13px;
+       }
+@@
+-      .routing {
+-        display: grid;
+-        gap: 0;
+-      }
++      .routing {
++        display: grid;
++        gap: 0;
++        background: linear-gradient(to bottom, rgba(19, 125, 174, 0.04), rgba(19, 125, 174, 0));
++      }
++
++      .routing[data-state="evaluating"] {
++        background: linear-gradient(to bottom, rgba(19, 125, 174, 0.1), rgba(19, 125, 174, 0.02));
++      }
++
++      .routing[data-state="qualified"] {
++        background: linear-gradient(to bottom, rgba(62, 94, 69, 0.16), rgba(62, 94, 69, 0.03));
++      }
++
++      .routing[data-state="review"] {
++        background: linear-gradient(to bottom, rgba(19, 125, 174, 0.12), rgba(19, 125, 174, 0.02));
++      }
++
++      .routing[data-state="hold"] {
++        background: linear-gradient(to bottom, rgba(122, 75, 60, 0.14), rgba(122, 75, 60, 0.03));
++      }
++
++      .decision-summary {
++        display: grid;
++        grid-template-columns: 1.15fr 0.85fr;
++        gap: 14px;
++        padding: 16px 18px;
++        border-bottom: 1px solid var(--line);
++      }
++
++      .decision-status {
++        display: grid;
++        gap: 10px;
++      }
++
++      .decision-kicker {
++        margin: 0;
++        color: var(--muted);
++        font-size: 13px;
++      }
++
++      .decision-title {
++        margin: 0;
++        font-size: 22px;
++        font-family: Georgia, "Times New Roman", serif;
++        font-weight: 400;
++        line-height: 1.12;
++      }
++
++      .decision-badge {
++        width: fit-content;
++        min-height: 28px;
++        display: inline-flex;
++        align-items: center;
++        padding: 0 10px;
++        border: 1px solid var(--line);
++        color: var(--muted);
++        font-size: 11px;
++        font-weight: 700;
++        letter-spacing: 0.08em;
++        text-transform: uppercase;
++      }
++
++      .decision-badge.qualified {
++        border-color: rgba(62, 94, 69, 0.55);
++        color: var(--ok);
++        background: rgba(62, 94, 69, 0.08);
++      }
++
++      .decision-badge.review {
++        border-color: rgba(19, 125, 174, 0.55);
++        color: var(--review);
++        background: rgba(19, 125, 174, 0.08);
++      }
++
++      .decision-badge.hold {
++        border-color: rgba(122, 75, 60, 0.55);
++        color: var(--hold);
++        background: rgba(122, 75, 60, 0.08);
++      }
++
++      .decision-score {
++        padding: 14px;
++        border: 1px solid var(--line);
++        background: rgba(255, 255, 255, 0.2);
++      }
++
++      .decision-score .route-label {
++        margin-bottom: 8px;
++      }
++
++      .score-value {
++        margin: 0;
++        font-family: Georgia, "Times New Roman", serif;
++        font-size: 38px;
++        line-height: 1;
++      }
++
++      .score-scale {
++        margin: 10px 0 0;
++        height: 7px;
++        background: rgba(23, 24, 24, 0.08);
++        border: 1px solid var(--line);
++        overflow: hidden;
++      }
++
++      .score-fill {
++        width: 0%;
++        height: 100%;
++        background: var(--review);
++        transition: width 220ms ease, background-color 220ms ease;
++      }
++
++      .routing[data-state="qualified"] .score-fill {
++        background: var(--ok);
++      }
++
++      .routing[data-state="hold"] .score-fill {
++        background: var(--hold);
++      }
+@@
+           <div class="routing" aria-live="polite">
++            <div class="routing-top">
++              <p class="mini-label">Decision console</p>
++              <p>Qualification state</p>
++            </div>
++            <div class="decision-summary">
++              <div class="decision-status">
++                <p class="decision-kicker">Current assessment</p>
++                <p class="decision-title" id="decision-title">Awaiting intake submission</p>
++                <span class="decision-badge review" id="decision-badge">Review</span>
++              </div>
++              <div class="decision-score">
++                <p class="route-label">Qualification score</p>
++                <p class="score-value" id="route-score-display">0</p>
++                <div class="score-scale" aria-hidden="true">
++                  <div class="score-fill" id="route-score-fill"></div>
++                </div>
++              </div>
++            </div>
+             <div class="route-row">
+               <p class="route-label">Routing status</p>
+               <p class="route-value" id="route-status">Awaiting intake</p>
+@@
+             <div class="route-row">
+               <p class="route-label">Score</p>
+               <p class="route-value" id="route-score">0 / 100</p>
+             </div>
+@@
+-      const statusEl = document.getElementById("route-status");
++      const routingPanel = document.querySelector(".routing");
++      const statusEl = document.getElementById("route-status");
+       const pathEl = document.getElementById("route-path");
+       const cohortEl = document.getElementById("route-cohort");
+       const gateEl = document.getElementById("route-gate");
+       const stageEl = document.getElementById("route-stage");
+       const nextStepEl = document.getElementById("route-next-step");
+       const scoreEl = document.getElementById("route-score");
++      const scoreDisplayEl = document.getElementById("route-score-display");
++      const scoreFillEl = document.getElementById("route-score-fill");
+       const notesEl = document.getElementById("route-notes");
++      const decisionTitleEl = document.getElementById("decision-title");
++      const decisionBadgeEl = document.getElementById("decision-badge");
+ 
+-      function paintTone(tone) {
++      function paintTone(tone) {
+         [statusEl, pathEl, cohortEl, gateEl, stageEl, nextStepEl].forEach((el) => {
+           el.classList.remove("qualified", "review", "hold");
+           if (tone) el.classList.add(tone);
+         });
++        decisionBadgeEl.classList.remove("qualified", "review", "hold");
++        if (tone) decisionBadgeEl.classList.add(tone);
++      }
++
++      function setDecisionState(state, title, badgeLabel, score) {
++        routingPanel.dataset.state = state;
++        decisionTitleEl.textContent = title;
++        decisionBadgeEl.textContent = badgeLabel;
++        scoreDisplayEl.textContent = String(score || 0);
++        scoreFillEl.style.width = `${Math.max(0, Math.min(100, Number(score) || 0))}%`;
++      }
++
++      function deriveConsoleState(result, mode) {
++        if (mode === "evaluating") {
++          return {
++            state: "evaluating",
++            title: "Running qualification review",
++            badge: "Evaluating"
++          };
++        }
++
++        if (result.tone === "qualified" || result.tone === "status-qualified") {
++          return {
++            state: "qualified",
++            title: "Qualified for direct follow-up",
++            badge: "Qualified"
++          };
++        }
++
++        if (result.tone === "hold" || result.tone === "status-hold") {
++          return {
++            state: "hold",
++            title: "Hold for lower-priority follow-up",
++            badge: "Hold"
++          };
++        }
++
++        return {
++          state: "review",
++          title: "Qualified for structured review",
++          badge: "Review"
++        };
+       }
+@@
+         const button = form.querySelector('button[type="submit"]');
+         button.textContent = "Submitting intake...";
+         button.disabled = true;
++        setDecisionState("evaluating", "Running qualification review", "Evaluating", 0);
++        paintTone("review");
++        statusEl.textContent = "Evaluating intake";
++        pathEl.textContent = "Running routing logic";
++        cohortEl.textContent = "Assessing cohort fit";
++        gateEl.textContent = "Assessing beta gate";
++        stageEl.textContent = "Preparing delivery route";
++        nextStepEl.textContent = "Hold for routing result";
++        scoreEl.textContent = "Scoring...";
++        notesEl.textContent = "Structured intake is being evaluated against beta qualification logic.";
+ 
+         try {
+           const localPreview = scoreSubmission(payload);
+@@
+           const result = liveResult.routing || localPreview;
++          const consoleState = deriveConsoleState(result, liveResult.mode);
+ 
+           statusEl.textContent = liveResult.mode === "preview" ? "Preview qualification" : result.status;
+           pathEl.textContent = result.path;
+           cohortEl.textContent = result.cohort;
+           gateEl.textContent = result.betaGate;
+           stageEl.textContent = "Direct email to wkb@jfb.fyi";
+           nextStepEl.textContent = result.nextStep;
+           scoreEl.textContent = result.score + " / 100";
++          setDecisionState(consoleState.state, consoleState.title, consoleState.badge, result.score);
+           notesEl.textContent =
+             liveResult.mode === "preview"
+               ? `Preview only. ${result.notes}`
+               : `Sent automatically to wkb@jfb.fyi. ${result.notes}`;
+           paintTone(result.tone === "status-qualified" ? "qualified" : result.tone === "status-hold" ? "hold" : result.tone || "review");
+           button.textContent = liveResult.mode === "preview" ? "Preview updated" : "Request sent";
+         } finally {
+diff --git a/netlify/functions/lib/conversion-system.js b/netlify/functions/lib/conversion-system.js
+--- a/netlify/functions/lib/conversion-system.js
++++ b/netlify/functions/lib/conversion-system.js
+@@
+ function buildEmailPackage(submission, routing, env = process.env) {
+   const to = env.BETA_REQUEST_EMAIL_TO || "wkb@jfb.fyi";
+   const subject = `Näləj Beta Intake | ${submission.organization} | ${routing.score}/100`;
+-  const lines = [
+-    "Näləj Beta Intake Request",
+-    "",
+-    `Submitted: ${submission.submittedAt}`,
+-    `Source: ${submission.source}`,
+-    "",
+-    "Contact",
+-    `Name: ${submission.name}`,
+-    `Organization: ${submission.organization}`,
+-    `Role: ${submission.role}`,
+-    `Email: ${submission.email}`,
+-    "",
+-    "Intake",
+-    `Use case: ${USE_CASE_LABELS[submission.useCase]}`,
+-    `Volume: ${VOLUME_LABELS[submission.volume]}`,
+-    `Context: ${submission.context}`,
+-    "",
+-    "Qualification",
+-    `Status: ${routing.status}`,
+-    `Path: ${routing.path}`,
+-    `Cohort: ${routing.cohort}`,
+-    `Beta gate: ${routing.betaGate}`,
+-    `Next step: ${routing.nextStep}`,
+-    `Score: ${routing.score}/100`,
+-    `Notes: ${routing.notes}`,
+-  ];
++  const factorLines = routing.scoringFactors.map(
++    (item) => `- ${item.factor}: ${item.score}`
++  );
++  const lines = [
++    "NÄLƏJ DILIGENCE",
++    "Internal Intake Memo",
++    "",
++    "MEMO HEADER",
++    `Submitted: ${submission.submittedAt}`,
++    `Source: ${submission.source}`,
++    `Priority: ${routing.priority}`,
++    `Route: ${routing.routeTo}`,
++    "",
++    "CONTACT",
++    `Name: ${submission.name}`,
++    `Organization: ${submission.organization}`,
++    `Role: ${submission.role}`,
++    `Email: ${submission.email}`,
++    "",
++    "INTAKE SUMMARY",
++    `Use case: ${USE_CASE_LABELS[submission.useCase]}`,
++    `Opportunity volume: ${VOLUME_LABELS[submission.volume]} / month`,
++    "Screening context:",
++    submission.context,
++    "",
++    "QUALIFICATION DECISION",
++    `Status: ${routing.status}`,
++    `Recommended path: ${routing.path}`,
++    `Cohort signal: ${routing.cohort}`,
++    `Beta gate: ${routing.betaGate}`,
++    `Next step: ${routing.nextStep}`,
++    `Qualification score: ${routing.score}/100`,
++    "",
++    "DECISION NOTES",
++    routing.notes,
++    "",
++    "SCORING FACTORS",
++    ...factorLines,
++  ];
+ 
+   return {
+     to,
