@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Näləj Diligence</title>
+    <meta
+      name="description"
+      content="Structured diligence architecture for faster, more disciplined early-stage decisions."
+    />
+    <style>
+      :root {
+        --paper: #f3f0e8;
+        --paper-2: #ece7dc;
+        --ink: #171818;
+        --muted: #5c615d;
+        --line: #cfc7b8;
+        --line-2: #ddd5c7;
+        --accent: #137dae;
+        --accent-soft: #d9eaf2;
+        --ok: #3e5e45;
+        --review: #137dae;
+        --hold: #7a4b3c;
+        --max: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.5 "Segoe UI", Arial, sans-serif;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: min(24px, 4vw);
+        width: 1px;
+        background: rgba(19, 125, 174, 0.08);
+        pointer-events: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      .wrap {
+        width: min(calc(100% - 32px), var(--max));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--line);
+        background: rgba(243, 240, 232, 0.94);
+        backdrop-filter: blur(8px);
+      }
+
+      .site-header .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 16px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .mark {
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--accent);
+        position: relative;
+      }
+
+      .mark::before,
+      .mark::after {
+        content: "";
+        position: absolute;
+        background: var(--accent);
+      }
+
+      .mark::before {
+        left: 3px;
+        right: 3px;
+        top: 7px;
+        height: 1px;
+      }
+
+      .mark::after {
+        top: 3px;
+        bottom: 3px;
+        left: 7px;
+        width: 1px;
+      }
+
+      .brand p {
+        margin: 0;
+      }
+
+      .brand-name,
+      .eyebrow,
+      th,
+      .mini-label,
+      .step-no,
+      .route-label {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand-name {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .brand-sub {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .nav a {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav a:last-child {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      section {
+        border-top: 1px solid var(--line);
+      }
+
+      .hero {
+        border-top: 0;
+      }
+
+      .hero .wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+        gap: 42px;
+        padding: 44px 0 28px;
+      }
+
+      .hero-copy {
+        padding-top: 8px;
+        border-top: 2px solid var(--accent-soft);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .product-name {
+        margin: 0 0 10px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+        line-height: 1.05;
+      }
+
+      h1 {
+        max-width: 11.5ch;
+        font-size: clamp(44px, 7vw, 82px);
+      }
+
+      h2 {
+        max-width: 15ch;
+        font-size: clamp(32px, 4.4vw, 52px);
+      }
+
+      h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .lead {
+        max-width: 60ch;
+        margin: 22px 0 0;
+        font-size: 18px;
+      }
+
+      .body-copy,
+      .section-head p,
+      .muted,
+      td,
+      .fit-block p,
+      .panel-note {
+        color: var(--muted);
+      }
+
+      .body-copy {
+        max-width: 64ch;
+        margin: 16px 0 0;
+      }
+
+      .actions,
+      .final-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin: 28px 0 26px;
+      }
+
+      .button,
+      .link {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .button {
+        padding: 0 18px;
+        border: 1px solid var(--ink);
+        background: transparent;
+        transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #f8fbfd;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        border-color: var(--accent);
+        outline: none;
+      }
+
+      .button.primary:hover,
+      .button.primary:focus-visible {
+        background: #0f6d99;
+      }
+
+      .button:not(.primary):hover,
+      .button:not(.primary):focus-visible {
+        background: rgba(19, 125, 174, 0.05);
+      }
+
+      .link {
+        color: var(--muted);
+        border-bottom: 1px solid transparent;
+      }
+
+      .credibility {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .credibility p {
+        margin: 0;
+        padding-top: 12px;
+        border-top: 1px solid var(--accent-soft);
+        color: var(--muted);
+      }
+
+      .diagram {
+        border: 1px solid var(--line);
+        background: linear-gradient(to bottom, var(--paper), var(--paper-2));
+        box-shadow: inset 0 3px 0 0 var(--accent-soft);
+      }
+
+      .diagram-top,
+      .intake-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .mini-label {
+        margin: 0;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .diagram-top p:last-child,
+      .intake-top p:last-child {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .steps {
+        padding: 18px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 14px;
+        align-items: center;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.28);
+      }
+
+      .step + .arrow {
+        height: 16px;
+        margin: 0 0 0 26px;
+        border-left: 1px solid var(--accent);
+      }
+
+      .step-no {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .step p,
+      .built-for p,
+      .outcomes strong,
+      .route-value,
+      .audience-grid p,
+      .principles p,
+      .tiers p {
+        margin: 0;
+      }
+
+      .diagram-notes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 18px 18px;
+      }
+
+      .diagram-notes p {
+        margin: 0;
+        padding: 8px 10px;
+        border: 1px solid var(--accent-soft);
+        color: var(--muted);
+        font-size: 14px;
+        background: rgba(19, 125, 174, 0.04);
+      }
+
+      .built-for .wrap {
+        display: grid;
+        grid-template-columns: max-content 22px max-content 22px max-content;
+        justify-content: center;
+        gap: 12px;
+        padding: 14px 0;
+      }
+
+      .built-for span {
+        align-self: center;
+        height: 1px;
+        background: var(--accent-soft);
+      }
+
+      .outcomes .wrap {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+      }
+
+      .outcomes .wrap > div {
+        padding: 18px 10px;
+        text-align: center;
+        border-left: 1px solid var(--line);
+        position: relative;
+      }
+
+      .outcomes .wrap > div::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10px;
+        right: 10px;
+        height: 2px;
+        background: transparent;
+      }
+
+      .outcomes .wrap > div:first-child {
+        border-left: 0;
+      }
+
+      .outcomes .wrap > div:nth-child(2)::before,
+      .outcomes .wrap > div:nth-child(4)::before {
+        background: var(--accent-soft);
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 470px);
+        gap: 28px;
+        align-items: start;
+        margin-bottom: 28px;
+      }
+
+      .two-col,
+      .fit-grid,
+      .beta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+      }
+
+      .lined-block,
+      .fit-block,
+      .principles > div,
+      .audience-grid > div,
+      .tiers > div {
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .fit-block h2 {
+        max-width: none;
+      }
+
+      ul.clean {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      ul.clean li {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .close-line {
+        margin: 20px 0 0;
+        font-size: 18px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border-top: 1px solid var(--line);
+      }
+
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 14px 14px 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      tbody tr td:first-child {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .principles,
+      .audience-grid,
+      .tiers {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .process {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .process-item {
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .process-item .step-no {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .tiers {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .intake {
+        border: 1px solid var(--line);
+        background: var(--paper-2);
+        box-shadow: inset 0 3px 0 0 var(--accent);
+      }
+
+      .intake-form,
+      .routing {
+        padding: 18px;
+      }
+
+      .intake-form {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 46px;
+        padding: 11px 12px;
+        border: 1px solid #bfb4a3;
+        background: #fbf9f4;
+        color: var(--ink);
+        border-radius: 0;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 1px solid var(--accent);
+        border-color: var(--accent);
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .routing {
+        display: grid;
+        gap: 0;
+      }
+
+      .route-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 12px;
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .route-row:first-child {
+        border-top: 0;
+      }
+
+      .route-label {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .qualified {
+        color: var(--ok);
+      }
+
+      .review {
+        color: var(--review);
+      }
+
+      .hold {
+        color: var(--hold);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .final {
+        padding-bottom: 56px;
+      }
+
+      .criteria {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .criteria p {
+        margin: 0 0 10px;
+        color: var(--muted);
+      }
+
+      .criteria ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .criteria li {
+        display: grid;
+        grid-template-columns: 12px 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .criteria li::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        margin-top: 7px;
+        background: var(--accent);
+      }
+
+      @media (max-width: 1080px) {
+        .hero .wrap,
+        .section-head,
+        .two-col,
+        .fit-grid,
+        .beta-grid,
+        .principles,
+        .audience-grid,
+        .tiers,
+        .process,
+        .form-grid,
+        .outcomes .wrap {
+          grid-template-columns: 1fr;
+        }
+
+        .built-for .wrap {
+          grid-template-columns: 1fr;
+          justify-content: start;
+        }
+
+        .built-for span,
+        .outcomes .wrap > div {
+          border-left: 0;
+        }
+
+        .credibility {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .site-header .wrap,
+        .nav,
+        .actions,
+        .final-actions {
+          align-items: flex-start;
+        }
+
+        body::before {
+          display: none;
+        }
+
+        .site-header .wrap,
+        .actions,
+        .final-actions {
+          flex-direction: column;
+        }
+
+        .button,
+        .link {
+          width: 100%;
+        }
+
+        .route-row {
+          grid-template-columns: 1fr;
+        }
+
+        table {
+          min-width: 620px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <div class="brand">
+          <span class="mark" aria-hidden="true"></span>
+          <div>
+            <p class="brand-name">Näləj Diligence</p>
+            <p class="brand-sub">Developed within JF Bicking &amp; Co.</p>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          <a href="#report-system">Report Architecture</a>
+          <a href="#fit-filter">Evaluate Fit</a>
+          <a href="#beta-access">Request Beta Access</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-copy">
+          <p class="eyebrow">Institutional strategy for the entrepreneurial economy</p>
+          <p class="product-name">Näləj Diligence</p>
+          <h1>Structured diligence architecture for faster, more disciplined early-stage decisions.</h1>
+          <p class="lead">
+            Näləj Diligence helps builder-led organizations replace fragmented screening with a
+            report-driven Tier 1 diligence system designed for verification, triage, and next-step
+            clarity.
+          </p>
+          <p class="body-copy">
+            Developed within JF Bicking &amp; Co., Näləj brings greater institutional structure to
+            early-stage evaluation through guided inputs, defined report logic, and
+            decision-oriented outputs. The result is a more consistent front-end diligence process
+            before deeper review begins.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#beta-access">Request Beta Access</a>
+            <a class="button" href="#report-system">View Report Architecture</a>
+            <a class="link" href="#fit-filter">Evaluate Fit</a>
+          </div>
+          <div class="credibility">
+            <p>Institutional screening architecture</p>
+            <p>Structured report-driven outputs</p>
+            <p>Disciplined triage and escalation logic</p>
+          </div>
+        </div>
+
+        <aside class="diagram" aria-label="Tier 1 diligence flow">
+          <div class="diagram-top">
+            <p class="mini-label">Tier 1 Diligence Flow</p>
+            <p>Defined operating sequence</p>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <span class="step-no">01</span>
+              <p>Case Intake</p>
+            </div>
+            <div class="arrow"></div>
+            <div class="step">
+              <span class="step-no">02</span>
+              <p>Verification Layer</p>
+            </div>
+            <div class="arrow"></div>
+            <div class="step">
+              <span class="step-no">03</span>
+              <p>Risk Structuring</p>
+            </div>
+            <div class="arrow"></div>
+            <div class="step">
+              <span class="step-no">04</span>
+              <p>Report Output</p>
+            </div>
+            <div class="arrow"></div>
+            <div class="step">
+              <span class="step-no">05</span>
+              <p>Escalation Pathway</p>
+            </div>
+          </div>
+          <div class="diagram-notes">
+            <p>Defined intake logic</p>
+            <p>Verification and risk-screening architecture</p>
+            <p>Clear next-step pathways</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="built-for">
+      <div class="wrap">
+        <p>Founder-led businesses</p>
+        <span aria-hidden="true"></span>
+        <p>Family enterprises</p>
+        <span aria-hidden="true"></span>
+        <p>Investors and portfolio companies</p>
+      </div>
+    </section>
+
+    <section class="outcomes">
+      <div class="wrap">
+        <div><strong>Faster qualification</strong></div>
+        <div><strong>More consistent screening</strong></div>
+        <div><strong>Clearer next-step decisions</strong></div>
+        <div><strong>Better front-end discipline</strong></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap section-pad">
+        <p class="eyebrow">The structural gap</p>
+        <div class="section-head">
+          <h2>Most front-end diligence lacks the structure required for consistent judgment.</h2>
+          <p>
+            Early-stage screening is often fragmented across inconsistent inputs, uneven analysis,
+            and unstructured judgment. That creates slower decisions, variable risk detection, and
+            weak conviction around what should happen next.
+          </p>
+        </div>
+        <div class="two-col">
+          <div class="lined-block">
+            <h3>Observed condition</h3>
+            <ul class="clean">
+              <li>Fragmented information inputs</li>
+              <li>Inconsistent first-pass analysis</li>
+              <li>Unclear decision logic</li>
+              <li>Too much dependence on individual judgment</li>
+            </ul>
+          </div>
+          <div class="lined-block">
+            <h3>Structural response</h3>
+            <ul class="clean">
+              <li>Defined intake logic</li>
+              <li>Verification and risk-screening architecture</li>
+              <li>Standardized report outputs</li>
+              <li>Clear next-step pathways</li>
+            </ul>
+          </div>
+        </div>
+        <p class="close-line">The issue isn't effort. It's architecture.</p>
+      </div>
+    </section>
+
+    <section id="report-system">
+      <div class="wrap section-pad">
+        <p class="eyebrow">Core system</p>
+        <div class="section-head">
+          <h2>A report-driven diligence layer built for front-end decision quality.</h2>
+          <p>
+            The Tier 1 report system is designed to improve verification, triage, and escalation
+            decisions through structured outputs that can be used consistently across opportunities,
+            counterparties, and cases.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Report</th>
+                <th>Primary Question</th>
+                <th>Typical Use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Identity Verification</td>
+                <td>Is this entity real and verifiable?</td>
+                <td>Before first engagement</td>
+              </tr>
+              <tr>
+                <td>Risk Screen</td>
+                <td>Is there any immediate concern or disqualifying issue?</td>
+                <td>Early triage</td>
+              </tr>
+              <tr>
+                <td>Legitimacy Snapshot</td>
+                <td>Does the business appear coherent and credible?</td>
+                <td>Pre-call or quick review</td>
+              </tr>
+              <tr>
+                <td>Tier 1 Intelligence Brief</td>
+                <td>What is the appropriate next step?</td>
+                <td>Full Tier 1 screening decision</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap section-pad">
+        <p class="eyebrow">Why this works</p>
+        <div class="section-head">
+          <h2>A controlled diligence architecture produces stronger front-end decisions than fragmented research.</h2>
+          <p>
+            Näləj is not a generic AI assistant or open-ended research interface. It is a defined
+            Tier 1 diligence system built to bring institutional logic to early-stage evaluation.
+          </p>
+        </div>
+        <div class="principles">
+          <div>
+            <h3>Institutional Logic</h3>
+            <p>Structured evaluation principles instead of ad hoc research habits.</p>
+          </div>
+          <div>
+            <h3>Structural Clarity</h3>
+            <p>Outputs organized for immediate interpretation and action.</p>
+          </div>
+          <div>
+            <h3>Decision Discipline</h3>
+            <p>A defined screening process that improves consistency across cases.</p>
+          </div>
+          <div>
+            <h3>Architectural Control</h3>
+            <p>A system designed to reduce drift, ambiguity, and overanalysis.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap section-pad">
+        <p class="eyebrow">Operating structure</p>
+        <div class="section-head">
+          <h2>A controlled diligence architecture, not an open-ended workflow.</h2>
+          <p>
+            Näləj follows a defined sequence from case definition through structured report output,
+            helping teams move faster without sacrificing discipline.
+          </p>
+        </div>
+        <div class="process">
+          <div class="process-item">
+            <span class="step-no">01</span>
+            <p>Define the case</p>
+          </div>
+          <div class="process-item">
+            <span class="step-no">02</span>
+            <p>Provide structured inputs</p>
+          </div>
+          <div class="process-item">
+            <span class="step-no">03</span>
+            <p>Apply verification and risk logic</p>
+          </div>
+          <div class="process-item">
+            <span class="step-no">04</span>
+            <p>Generate report output</p>
+          </div>
+          <div class="process-item">
+            <span class="step-no">05</span>
+            <p>Refine, escalate, or close</p>
+          </div>
+        </div>
+        <p class="close-line">Each step is designed to improve decision quality, not simply generate more information.</p>
+      </div>
+    </section>
+
+    <section id="fit-filter">
+      <div class="wrap section-pad">
+        <div class="fit-grid">
+          <div class="fit-block">
+            <h2>When this is useful</h2>
+            <ul class="clean">
+              <li>Screening multiple opportunities</li>
+              <li>Need consistent front-end triage</li>
+              <li>Multiple stakeholders involved in decisions</li>
+            </ul>
+          </div>
+          <div class="fit-block">
+            <h2>When this is not</h2>
+            <ul class="clean">
+              <li>Full diligence already underway</li>
+              <li>Seeking advisory conclusions</li>
+              <li>One-off research or data gathering</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap section-pad">
+        <p class="eyebrow">Client alignment</p>
+        <div class="section-head">
+          <h2>Designed for builder-led organizations and their capital partners.</h2>
+          <p>
+            Näləj aligns with the same client architecture served by JF Bicking &amp; Co.,
+            supporting organizations that need stronger front-end decision infrastructure before
+            deeper diligence or strategic engagement.
+          </p>
+        </div>
+        <div class="audience-grid">
+          <div>
+            <h3>Founder-Led Businesses</h3>
+            <p>Screening partners, opportunities, and external relationships.</p>
+          </div>
+          <div>
+            <h3>Family Enterprises</h3>
+            <p>Applying structured diligence to sensitive strategic decisions.</p>
+          </div>
+          <div>
+            <h3>Investors &amp; Portfolio Companies</h3>
+            <p>Improving front-end triage before deeper diligence.</p>
+          </div>
+          <div>
+            <h3>Advisory &amp; Diligence Teams</h3>
+            <p>Producing consistent, structured client-facing outputs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap section-pad">
+        <div class="section-head">
+          <h2>Built to expand beyond Tier 1.</h2>
+          <p>
+            The architecture is designed to extend from front-end screening toward expanded
+            diligence and enterprise intelligence without changing the underlying decision model.
+          </p>
+        </div>
+        <div class="tiers">
+          <div>
+            <h3>Tier 1</h3>
+            <p>Screening architecture</p>
+          </div>
+          <div>
+            <h3>Tier 2</h3>
+            <p>Expanded diligence</p>
+          </div>
+          <div>
+            <h3>Tier 3</h3>
+            <p>Enterprise intelligence</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="beta-access">
+      <div class="wrap section-pad beta-grid">
+        <div>
+          <p class="eyebrow">Beta access</p>
+          <div class="section-head" style="grid-template-columns: 1fr;">
+            <h2>Founding access for organizations that want earlier deployment and direct input.</h2>
+            <p>
+              The beta program is designed for a limited group of organizations seeking earlier use,
+              guided onboarding, and direct participation in refinement of the Tier 1 diligence
+              system.
+            </p>
+          </div>
+          <ul class="clean">
+            <li>Dedicated workspace</li>
+            <li>Guided onboarding</li>
+            <li>Full Tier 1 report access</li>
+            <li>Direct product feedback loop</li>
+            <li>Priority influence on refinement</li>
+          </ul>
+          <div class="lined-block" style="margin-top: 22px;">
+            <h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 40px; font-weight: 400; margin-bottom: 6px;">$3,500 / month</h3>
+            <p class="muted">Founding beta pricing ahead of the planned standard tier.</p>
+          </div>
+          <div class="criteria">
+            <p>Founding cohort signals</p>
+            <ul>
+              <li><span>Clear recurring screening volume</span></li>
+              <li><span>Multi-stakeholder decision environment</span></li>
+              <li><span>Need for stronger front-end qualification discipline</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="intake">
+          <div class="intake-top">
+            <p class="mini-label">Structured intake</p>
+            <p>Qualification preview</p>
+          </div>
+          <form class="intake-form" id="intake-form">
+            <div class="form-grid">
+              <label>
+                Name
+                <input name="name" required />
+              </label>
+              <label>
+                Organization
+                <input name="organization" required />
+              </label>
+              <label>
+                Role
+                <input name="role" required />
+              </label>
+              <label>
+                Work email
+                <input name="email" type="email" required />
+              </label>
+              <label>
+                Use case
+                <select name="useCase" required>
+                  <option value="">Select one</option>
+                  <option value="screening-opportunities">Screening multiple opportunities</option>
+                  <option value="front-end-triage">Need consistent front-end triage</option>
+                  <option value="multi-stakeholder">Multiple stakeholders involved in decisions</option>
+                  <option value="advisory-conclusions">Seeking advisory conclusions</option>
+                  <option value="one-off-research">One-off research or data gathering</option>
+                </select>
+              </label>
+              <label>
+                Volume of opportunities / month
+                <select name="volume" required>
+                  <option value="">Select one</option>
+                  <option value="1-5">1-5</option>
+                  <option value="6-15">6-15</option>
+                  <option value="16-40">16-40</option>
+                  <option value="40+">40+</option>
+                </select>
+              </label>
+            </div>
+            <label style="margin-top: 14px;">
+              Screening context
+              <textarea name="context" required></textarea>
+            </label>
+            <div class="actions" style="margin-bottom: 0;">
+              <button class="button primary" type="submit">Run Intake Qualification</button>
+            </div>
+            <p class="panel-note">Requests route to `wkb@jfb.fyi`. When deployed, the live endpoint sends the message automatically through Resend. When opened directly as a file, it falls back to in-page qualification preview.</p>
+          </form>
+          <div class="routing" aria-live="polite">
+            <div class="route-row">
+              <p class="route-label">Routing status</p>
+              <p class="route-value" id="route-status">Awaiting intake</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Recommended path</p>
+              <p class="route-value" id="route-path">Not yet evaluated</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Cohort signal</p>
+              <p class="route-value" id="route-cohort">Not yet evaluated</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Beta gate</p>
+              <p class="route-value" id="route-gate">Not yet evaluated</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Delivery mode</p>
+              <p class="route-value" id="route-stage">Not yet evaluated</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Next step</p>
+              <p class="route-value" id="route-next-step">Not yet evaluated</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Score</p>
+              <p class="route-value" id="route-score">0 / 100</p>
+            </div>
+            <div class="route-row">
+              <p class="route-label">Notes</p>
+              <p class="route-value" id="route-notes">Structured intake is used to determine beta fit and follow-up priority.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="wrap section-pad">
+        <p class="eyebrow">Request access</p>
+        <div class="section-head">
+          <h2>Bring greater structure to front-end diligence.</h2>
+          <p>
+            Näləj is built for organizations that want a more disciplined way to evaluate
+            opportunities, counterparties, and early-stage cases before deeper work begins.
+          </p>
+        </div>
+        <div class="final-actions">
+          <a class="button primary" href="#beta-access">Request Beta Access</a>
+          <a class="button" href="#report-system">Review Report Architecture</a>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const form = document.getElementById("intake-form");
+      const statusEl = document.getElementById("route-status");
+      const pathEl = document.getElementById("route-path");
+      const cohortEl = document.getElementById("route-cohort");
+      const gateEl = document.getElementById("route-gate");
+      const stageEl = document.getElementById("route-stage");
+      const nextStepEl = document.getElementById("route-next-step");
+      const scoreEl = document.getElementById("route-score");
+      const notesEl = document.getElementById("route-notes");
+
+      function paintTone(tone) {
+        [statusEl, pathEl, cohortEl, gateEl, stageEl, nextStepEl].forEach((el) => {
+          el.classList.remove("qualified", "review", "hold");
+          if (tone) el.classList.add(tone);
+        });
+      }
+
+      function scoreSubmission(payload) {
+        let score = 0;
+        let path = "Standard review";
+        let cohort = "Review queue";
+        let status = "Needs review";
+        let betaGate = "secondary_review";
+        let nextStep = "Internal qualification review";
+        let tone = "review";
+        const notes = [];
+
+        if (["screening-opportunities", "front-end-triage", "multi-stakeholder"].includes(payload.useCase)) {
+          score += 35;
+          notes.push("Use case aligns with structured front-end diligence.");
+        } else {
+          notes.push("Use case suggests a lower-fit entry point.");
+        }
+
+        if (payload.volume === "6-15") score += 20;
+        if (payload.volume === "16-40" || payload.volume === "40+") score += 30;
+        if (payload.volume === "1-5") score += 10;
+        if (payload.role.length >= 6) score += 10;
+        if (payload.context.length >= 40) score += 15;
+        if (payload.email.includes("@")) score += 10;
+
+        if (score >= 75) {
+          path = "Priority beta review";
+          cohort = "Founding cohort candidate";
+          status = "Qualified for direct follow-up";
+          betaGate = "founding_open";
+          nextStep = "Priority outreach and scheduling";
+          tone = "qualified";
+          notes.unshift("Signal strength supports immediate beta review.");
+        } else if (score >= 50) {
+          path = "Standard beta review";
+          cohort = "Secondary cohort";
+          status = "Qualified for structured review";
+          betaGate = "secondary_review";
+          nextStep = "Standard qualification review";
+          tone = "review";
+          notes.unshift("Submission appears viable but may require additional screening.");
+        } else {
+          path = "Hold or standard tier follow-up";
+          cohort = "Outside founding cohort";
+          status = "Not currently prioritized";
+          betaGate = "nurture_hold";
+          nextStep = "Hold, nurture, or redirect";
+          tone = "hold";
+          notes.unshift("Submission currently reads as lower fit for the founding beta group.");
+        }
+
+        return { score, path, cohort, status, betaGate, nextStep, tone, notes: notes.join(" ") };
+      }
+
+      async function submitToLiveEndpoint(payload) {
+        if (window.location.protocol === "file:") {
+          throw new Error("Preview mode");
+        }
+
+        const response = await fetch("/.netlify/functions/request-beta", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          throw new Error(errorBody.error || "Submission failed.");
+        }
+
+        return response.json();
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const payload = {
+          name: String(data.get("name") || "").trim(),
+          organization: String(data.get("organization") || "").trim(),
+          role: String(data.get("role") || "").trim(),
+          email: String(data.get("email") || "").trim(),
+          useCase: String(data.get("useCase") || "").trim(),
+          volume: String(data.get("volume") || "").trim(),
+          context: String(data.get("context") || "").trim(),
+          source: "nalej-landing-page"
+        };
+
+        const button = form.querySelector('button[type="submit"]');
+        button.textContent = "Submitting intake...";
+        button.disabled = true;
+
+        try {
+          const localPreview = scoreSubmission(payload);
+          let liveResult;
+
+          try {
+            liveResult = await submitToLiveEndpoint(payload);
+          } catch (error) {
+            liveResult = {
+              mode: "preview",
+              routing: localPreview
+            };
+          }
+
+          const result = liveResult.routing || localPreview;
+
+          statusEl.textContent = liveResult.mode === "preview" ? "Preview qualification" : result.status;
+          pathEl.textContent = result.path;
+          cohortEl.textContent = result.cohort;
+          gateEl.textContent = result.betaGate;
+          stageEl.textContent = "Direct email to wkb@jfb.fyi";
+          nextStepEl.textContent = result.nextStep;
+          scoreEl.textContent = result.score + " / 100";
+          notesEl.textContent =
+            liveResult.mode === "preview"
+              ? `Preview only. ${result.notes}`
+              : `Sent automatically to wkb@jfb.fyi. ${result.notes}`;
+          paintTone(result.tone === "status-qualified" ? "qualified" : result.tone === "status-hold" ? "hold" : result.tone || "review");
+          button.textContent = liveResult.mode === "preview" ? "Preview updated" : "Request sent";
+        } finally {
+          window.setTimeout(() => {
+            button.disabled = false;
+            button.textContent = "Run Intake Qualification";
+          }, 1800);
+        }
+      });
+    </script>
+  </body>
+</html>
